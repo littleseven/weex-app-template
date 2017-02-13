@@ -1,8 +1,8 @@
 include ':app'
 include ':weexplugin'
 include ":appframework"
-include ":plugin"
-project(":plugin").projectDir=new File("../plugin")
+//include ":plugin"
+//project(":plugin").projectDir=new File("../plugin")
 
 //include ":inspector"
 //project(":inspector").projectDir=new File("../inspector")

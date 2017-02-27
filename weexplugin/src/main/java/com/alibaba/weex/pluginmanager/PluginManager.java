@@ -1,5 +1,7 @@
 package com.alibaba.weex.pluginmanager;
 
+import android.content.Context;
+
 import com.taobao.weex.WXSDKEngine;
 import com.taobao.weex.common.WXException;
 
@@ -10,6 +12,18 @@ import java.util.Map;
  * Created by budao on 2016/10/25.
  */
 public class PluginManager {
+  private static HashMap<String, PluginEntry> sComponents = new HashMap<>();
+  private static HashMap<String, PluginEntry> sModules = new HashMap<>();
+
+  /**
+   * Load plugin settings from config file config.xml and register them to weex core.
+   */
+  public static void init(Context context) {
+    loadConfig(context);
+    registerComponents(sComponents);
+    registerModules(sModules);
+  }
+
   public static void registerComponent(String name, String className) {
     try {
       Class clazz = Class.forName(className);
@@ -19,7 +33,6 @@ public class PluginManager {
     } catch (WXException e) {
       e.printStackTrace();
     }
-
   }
 
   public static void registerModule(String name, String className) {
@@ -33,26 +46,22 @@ public class PluginManager {
     }
   }
 
-//  public static void registerComponents(HashMap<String, String> components) {
-//    for (Map.Entry<String, String> component : components.entrySet()) {
-//      registerComponent(component.getKey(), component.getValue());
-//    }
-//  }
-//
-//  public static void registerModules(HashMap<String, String> modules) {
-//    for (Map.Entry<String, String> module : modules.entrySet()) {
-//      registerModule(module.getKey(), module.getValue());
-//    }
-//  }
-  public static void registerComponents(HashMap<String, PluginEntry> components) {
+  private static void registerComponents(HashMap<String, PluginEntry> components) {
     for (Map.Entry<String, PluginEntry> component : components.entrySet()) {
-      registerComponent(component.getKey(), component.getValue().pluginClass);
+      registerComponent(component.getKey(), component.getValue().mPluginClass);
     }
   }
 
-  public static void registerModules(HashMap<String, PluginEntry> modules) {
+  private static void registerModules(HashMap<String, PluginEntry> modules) {
     for (Map.Entry<String, PluginEntry> module : modules.entrySet()) {
-      registerModule(module.getKey(), module.getValue().pluginClass);
+      registerModule(module.getKey(), module.getValue().mPluginClass);
     }
+  }
+
+  private static void loadConfig(Context context) {
+    ConfigXmlParser parser = new ConfigXmlParser();
+    parser.parse(context);
+    sComponents = parser.getPluginComponents();
+    sModules = parser.getPluginModules();
   }
 }
